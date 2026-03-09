@@ -1,6 +1,6 @@
 {
   "name": "better-auth-no-disposable-emails",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "better-auth plugin to prevent disposable emails",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -21,7 +21,8 @@
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -34,8 +35,8 @@
     "email-validation",
     "mailchecker"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "koslib",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/koslib/better-auth-no-disposable-emails/issues"
   },
