@@ -81,7 +81,7 @@ describe("noDisposableEmails plugin", () => {
     expect(result.error?.status).toBe(400);
   });
 
-  it("should allow sign-in with a legitimate email", async () => {
+  it("should not block sign-in by default", async () => {
     const { client } = await getTestInstance(
       { plugins: [noDisposableEmails()] },
       { testUser: TEST_USER }
@@ -95,9 +95,15 @@ describe("noDisposableEmails plugin", () => {
     expect(result.error).toBeNull();
   });
 
-  it("should reject sign-in with a disposable email", async () => {
+  it("should block sign-in when paths include /sign-in/email", async () => {
     const { client } = await getTestInstance(
-      { plugins: [noDisposableEmails()] },
+      {
+        plugins: [
+          noDisposableEmails({
+            paths: ["/sign-up/email", "/sign-in/email"],
+          }),
+        ],
+      },
       { testUser: TEST_USER }
     );
 

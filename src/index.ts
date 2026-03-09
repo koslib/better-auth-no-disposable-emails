@@ -13,6 +13,11 @@ export interface NoDisposableEmailsOptions {
    * Additional domains to block beyond the mailchecker defaults.
    */
   customBlockedDomains?: string[];
+  /**
+   * Auth paths to intercept and check for disposable emails.
+   * @default ["/sign-up/email"]
+   */
+  paths?: string[];
 }
 
 export const noDisposableEmails = (
@@ -24,6 +29,8 @@ export const noDisposableEmails = (
   const customBlockedSet = new Set(
     (options?.customBlockedDomains ?? []).map((d) => d.toLowerCase())
   );
+
+  const hookedPaths = new Set(options?.paths ?? ["/sign-up/email"]);
 
   function isEmailAllowed(email: string): boolean {
     const domain = email.split("@")[1]?.toLowerCase();
@@ -38,12 +45,7 @@ export const noDisposableEmails = (
       before: [
         {
           matcher(ctx) {
-            return (
-              ctx.path === "/sign-up/email" ||
-              ctx.path === "/sign-in/email" ||
-              ctx.path === "/sign-in/magic-link" ||
-              ctx.path === "/email-otp/send-verification-otp"
-            );
+            return ctx.path ? hookedPaths.has(ctx.path) : false;
           },
           handler: createAuthMiddleware(async (ctx) => {
             const email: string | undefined =

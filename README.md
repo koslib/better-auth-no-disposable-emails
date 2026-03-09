@@ -38,6 +38,9 @@ export const auth = betterAuth({
 
       // Optional: add extra domains to block beyond mailchecker's defaults
       customBlockedDomains: ["acmespam.com", "throwaway-mail.io"],
+
+      // Optional: customize which auth paths are checked (default: sign-up only)
+      paths: ["/sign-up/email", "/sign-in/email", "/sign-in/magic-link"],
     }),
   ],
 });
@@ -49,17 +52,24 @@ export const auth = betterAuth({
 |---|---|---|---|
 | `errorMessage` | `string` | `"Disposable email addresses are not allowed."` | The error message returned to the client when a disposable email is detected. |
 | `customBlockedDomains` | `string[]` | `[]` | Additional email domains to block, on top of the [mailchecker defaults](https://github.com/FGRibreau/mailchecker). |
+| `paths` | `string[]` | `["/sign-up/email"]` | Auth endpoint paths to intercept and check for disposable emails. |
 
 ## How it works
 
-The plugin registers a `before` hook that intercepts the following endpoints:
+The plugin registers a `before` hook that intercepts auth endpoints and checks submitted emails against known disposable email providers using `MailChecker.isValid()`. If a disposable email is detected, a `400 BAD_REQUEST` error is returned with the error code `DISPOSABLE_EMAIL_NOT_ALLOWED`.
 
-- `POST /sign-up/email`
-- `POST /sign-in/email`
-- `POST /sign-in/magic-link`
-- `POST /email-otp/send-verification-otp`
+By default, only `POST /sign-up/email` is intercepted. You can extend coverage to other paths:
 
-When an email is provided, it is checked using `MailChecker.isValid()`. If the email belongs to a known disposable email provider, a `400 BAD_REQUEST` error is returned with the error code `DISPOSABLE_EMAIL_NOT_ALLOWED`.
+```typescript
+noDisposableEmails({
+  paths: [
+    "/sign-up/email",
+    "/sign-in/email",
+    "/sign-in/magic-link",
+    "/email-otp/send-verification-otp",
+  ],
+})
+```
 
 ## Usage with Next.js
 
