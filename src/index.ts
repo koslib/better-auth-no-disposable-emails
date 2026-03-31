@@ -1,7 +1,6 @@
 import MailChecker from "mailchecker";
 import type { BetterAuthPlugin } from "better-auth";
-import { createAuthMiddleware } from "better-auth/plugins";
-import { APIError } from "better-auth/api";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 
 export interface NoDisposableEmailsOptions {
   /**
@@ -66,7 +65,10 @@ export const noDisposableEmails = (
       ],
     },
     $ERROR_CODES: {
-      DISPOSABLE_EMAIL_NOT_ALLOWED: errorMessage,
+      DISPOSABLE_EMAIL_NOT_ALLOWED: {
+        code: "DISPOSABLE_EMAIL_NOT_ALLOWED",
+        message: errorMessage,
+      },
     },
   };
 };
